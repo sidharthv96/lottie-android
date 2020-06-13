@@ -1,5 +1,6 @@
 package com.airbnb.lottie.samples
 
+import android.annotation.SuppressLint
 import android.os.Bundle
 import android.view.View
 import androidx.lifecycle.Observer
@@ -14,12 +15,7 @@ import com.airbnb.lottie.samples.views.AnimationItemViewModel_
 import com.airbnb.lottie.samples.views.lottiefilesTabBar
 import com.airbnb.lottie.samples.views.marquee
 import com.airbnb.lottie.samples.views.searchInputItemView
-import com.airbnb.mvrx.BaseMvRxFragment
-import com.airbnb.mvrx.MvRxState
-import com.airbnb.mvrx.MvRxViewModelFactory
-import com.airbnb.mvrx.ViewModelContext
-import com.airbnb.mvrx.fragmentViewModel
-import com.airbnb.mvrx.withState
+import com.airbnb.mvrx.*
 import io.reactivex.schedulers.Schedulers
 import kotlinx.android.synthetic.main.fragment_epoxy_recycler_view.*
 import kotlin.properties.Delegates
@@ -65,6 +61,7 @@ class LottiefilesDataSource(
         val mode: LottiefilesMode,
         val query: String
 ) : PageKeyedDataSource<Int, AnimationData>() {
+    @SuppressLint("CheckResult")
     override fun loadInitial(params: LoadInitialParams<Int>, callback: LoadInitialCallback<Int, AnimationData>) {
         if (mode == LottiefilesMode.Search && query.isEmpty()) {
             callback.onResult(emptyList(), null, null)
@@ -76,10 +73,7 @@ class LottiefilesDataSource(
             LottiefilesMode.Search -> api.search(query, 1)
         }
                 .subscribeOn(Schedulers.io())
-                .subscribe(
-                        { d -> callback.onResult(d.data, 0, d.total, null, 2.takeIf { d.data.isNotEmpty() }) },
-                        { callback.onError(it) }
-                )
+                .subscribe { d -> callback.onResult(d.data, 0, d.total, null, 2.takeIf { d.data.isNotEmpty() }) }
     }
 
     override fun loadAfter(params: LoadParams<Int>, callback: LoadCallback<Int, AnimationData>) {
@@ -90,6 +84,7 @@ class LottiefilesDataSource(
         loadPage(params.key, callback)
     }
 
+    @SuppressLint("CheckResult")
     private fun loadPage(page: Int, callback: LoadCallback<Int, AnimationData>) {
         when (mode) {
             LottiefilesMode.Popular -> api.getPopular(page)
@@ -99,7 +94,7 @@ class LottiefilesDataSource(
                 .subscribeOn(Schedulers.io())
                 .subscribe(
                         { callback.onResult(it.data, page + 1) },
-                        { callback.onError(it) }
+                        {  }
                 )
     }
 }
