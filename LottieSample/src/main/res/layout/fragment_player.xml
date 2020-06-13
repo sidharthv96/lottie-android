@@ -41,7 +41,7 @@
         <include layout="@layout/control_bar_speed" />
         <include layout="@layout/control_bar_scale" />
         <include layout="@layout/control_bar_background_color" />
-        <include layout="@layout/control_bar_trim" />
+        <include layout="@layout/control_bar_mode" />
         <include layout="@layout/control_bar_player_controls" />
         <include layout="@layout/control_bar" />
     </LinearLayout>
@@ -54,7 +54,4 @@
         app:navigationIcon="@drawable/ic_nav_close_selector"
         app:title=""/>
 
-    <include layout="@layout/bottom_sheet_render_times" />
-    <include layout="@layout/bottom_sheet_warnings" />
-    <include layout="@layout/bottom_sheet_key_paths" />
 </androidx.coordinatorlayout.widget.CoordinatorLayout>

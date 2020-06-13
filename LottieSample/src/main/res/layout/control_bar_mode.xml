@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/modeContainer"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:visibility="gone">
+
+    <LinearLayout
+        android:id="@+id/modeButtonsContainer"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:clipToPadding="false"
+        android:orientation="horizontal"
+        android:paddingBottom="8dp"
+        android:paddingTop="8dp"
+        android:paddingStart="4dp"
+        android:paddingLeft="4dp">
+
+        <com.airbnb.lottie.samples.views.ControlBarItemToggleView
+            style="@style/SpeedItem"
+            app:src="@drawable/ic_loop"
+            app:text="@string/infinite"/>
+
+        <com.airbnb.lottie.samples.views.ControlBarItemToggleView
+            style="@style/SpeedItem"
+            app:src="@drawable/ic_invert"
+            app:text="@string/on_touch"/>
+
+        <com.airbnb.lottie.samples.views.ControlBarItemToggleView
+            style="@style/SpeedItem"
+            app:src="@drawable/ic_eye_black"
+            app:text="@string/on_load"/>
+
+        <ImageButton
+            android:id="@+id/closeModeButton"
+            android:layout_width="32dp"
+            android:layout_height="32dp"
+            android:layout_marginRight="16dp"
+            android:background="?attr/selectableItemBackgroundBorderless"
+            app:srcCompat="@drawable/ic_close"/>
+    </LinearLayout>
+
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/divider_height"
+        android:layout_gravity="bottom"
+        android:background="@color/divider"/>
+</FrameLayout>

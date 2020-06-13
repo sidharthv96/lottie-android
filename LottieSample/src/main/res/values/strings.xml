@@ -84,4 +84,8 @@
     <string name="showcase_item_dynamic_text">Dynamic\nText</string>
     <string name="showcase_item_recycler_viwe">RecyclerView</string>
     <string name="bullseye_drag_dot">Drag the blue dot</string>
+    <string name="control_bar_mode">Mode</string>
+    <string name="infinite">Infinite</string>
+    <string name="on_touch">On Touch</string>
+    <string name="on_load">On Load</string>
 </resources>

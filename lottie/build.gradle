@@ -1,16 +1,16 @@
 import net.ltgt.gradle.errorprone.CheckSeverity
 
-apply from: 'gradle-maven-push.gradle'
+//apply from: 'gradle-maven-push.gradle'
 apply plugin: 'com.android.library'
 apply plugin: 'net.ltgt.errorprone'
 
 android {
-  compileSdkVersion 29
+  compileSdkVersion 30
   resourcePrefix 'lottie_'
 
   defaultConfig {
     minSdkVersion 16
-    targetSdkVersion 29
+    targetSdkVersion 30
   }
   lintOptions {
     abortOnError true
@@ -45,12 +45,6 @@ task sourcesJar(type: Jar) {
   classifier = 'sources'
 }
 
-task javadoc(type: Javadoc) {
-  source = android.sourceSets.main.java.srcDirs
-  configurations.implementation.setCanBeResolved(true)
-  classpath += project.files(android.getBootClasspath().join(File.pathSeparator)) + configurations.implementation
-  failOnError false
-}
 
 tasks.withType(JavaCompile) {
   // remove the if condition if you want to run NullAway on test code

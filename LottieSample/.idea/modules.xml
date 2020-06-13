@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="ProjectModuleManager">
+    <modules>
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/LottieSample.iml" filepath="$PROJECT_DIR$/.idea/modules/LottieSample.iml" group="lottie-android/LottieSample" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/-47870605/issue-repro.iml" filepath="$PROJECT_DIR$/.idea/modules/-47870605/issue-repro.iml" group="lottie-android/issue-repro" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/-1169776718/lottie.iml" filepath="$PROJECT_DIR$/.idea/modules/-1169776718/lottie.iml" group="lottie-android/lottie" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/39539036/lottie-android.iml" filepath="$PROJECT_DIR$/.idea/modules/39539036/lottie-android.iml" group="lottie-android" />
+    </modules>
+  </component>
+</project>
