@@ -88,4 +88,7 @@
     <string name="infinite">Infinite</string>
     <string name="on_touch">On Touch</string>
     <string name="on_load">On Load</string>
+    <string name="yes">Yes</string>
+    <string name="cancel">Cancel</string>
+    <string name="confirm_set_wallpaper">Set as new Wallpaper?</string>
 </resources>

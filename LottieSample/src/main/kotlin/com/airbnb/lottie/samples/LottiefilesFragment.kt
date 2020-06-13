@@ -2,6 +2,7 @@ package com.airbnb.lottie.samples
 
 import android.annotation.SuppressLint
 import android.os.Bundle
+import android.util.Log
 import android.view.View
 import androidx.lifecycle.Observer
 import androidx.paging.DataSource
@@ -73,7 +74,10 @@ class LottiefilesDataSource(
             LottiefilesMode.Search -> api.search(query, 1)
         }
                 .subscribeOn(Schedulers.io())
-                .subscribe { d -> callback.onResult(d.data, 0, d.total, null, 2.takeIf { d.data.isNotEmpty() }) }
+                .subscribe(
+                        { d -> callback.onResult(d.data, 0, d.total, null, 2.takeIf { d.data.isNotEmpty() }) },
+                        { err -> Log.e(LottiefilesFragment::class.simpleName, "loadInitial: ", err ) }
+                )
     }
 
     override fun loadAfter(params: LoadParams<Int>, callback: LoadCallback<Int, AnimationData>) {
@@ -94,7 +98,8 @@ class LottiefilesDataSource(
                 .subscribeOn(Schedulers.io())
                 .subscribe(
                         { callback.onResult(it.data, page + 1) },
-                        {  }
+                        { err -> Log.e(LottiefilesFragment::class.simpleName, "loadPage: ",
+                                err ) }
                 )
     }
 }
@@ -128,7 +133,6 @@ class LottiefilesFragment : BaseMvRxFragment(R.layout.fragment_epoxy_recycler_vi
                 marquee {
                     id("lottiefiles")
                     title(R.string.lottiefiles)
-                    subtitle(R.string.lottiefiles_airbnb)
                 }
 
                 lottiefilesTabBar {

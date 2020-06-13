@@ -2,21 +2,16 @@ package com.airbnb.lottie.samples
 
 import android.animation.ValueAnimator
 import android.annotation.SuppressLint
-import android.app.WallpaperManager
-import android.content.ComponentName
-import android.content.Intent
-import android.content.SharedPreferences
 import android.graphics.Color
 import android.graphics.Typeface
 import android.os.Bundle
 import android.util.Log
 import android.view.*
+import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
-import androidx.core.content.ContextCompat
 import androidx.core.view.children
 import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
-import androidx.preference.PreferenceManager
 import androidx.transition.AutoTransition
 import androidx.transition.TransitionManager
 import com.airbnb.lottie.FontAssetDelegate
@@ -41,7 +36,7 @@ import kotlin.math.roundToInt
 
 class PlayerFragment : BaseMvRxFragment() {
 
-    private var prefs: SharedPreferences? = null
+
     private val transition = AutoTransition().apply { duration = 175 }
 
     private val animatorListener = AnimatorListenerAdapter(
@@ -68,7 +63,6 @@ class PlayerFragment : BaseMvRxFragment() {
         (requireActivity() as AppCompatActivity).supportActionBar?.setDisplayShowTitleEnabled(false)
         setHasOptionsMenu(true)
 
-        prefs = PreferenceManager.getDefaultSharedPreferences(requireContext())
         animationView.setFontAssetDelegate(object : FontAssetDelegate() {
             override fun fetchFont(fontFamily: String?): Typeface {
                 return Typeface.DEFAULT
@@ -100,12 +94,6 @@ class PlayerFragment : BaseMvRxFragment() {
         }) {
             loadingView.isVisible = false
             onCompositionLoaded(it)
-        }
-
-        viewModel.selectSubscribe(PlayerState::lottieURL) {
-            if(it != "") {
-                prefs?.edit()?.putString(PREF_LOTTIE_URL, it)?.apply()
-            }
         }
 
         viewModel.selectSubscribe(PlayerState::controlsVisible) { controlsContainer.animateVisible(it) }
@@ -223,6 +211,7 @@ class PlayerFragment : BaseMvRxFragment() {
                     val maxScale = maxScale()
                     val scale = minScale + progress / 100f * (maxScale - minScale)
                     animationView.scale = scale
+                    viewModel.setScale(scale)
                     scaleText.text = "%.0f%%".format(scale * 100)
                 }
         ))
@@ -236,6 +225,7 @@ class PlayerFragment : BaseMvRxFragment() {
                 backgroundButton6
         ).forEach { bb ->
             bb.setOnClickListener {
+                viewModel.setBackground(bb.getColor())
                 animationContainer.setBackgroundColor(bb.getColor())
                 invertColor(bb.getColor())
             }
@@ -249,9 +239,9 @@ class PlayerFragment : BaseMvRxFragment() {
     }
 
     private fun invertColor(color: Int) {
-        val isDarkBg = color.isDark()
-        animationView.isActivated = isDarkBg
-        toolbar.isActivated = isDarkBg
+//        val isDarkBg = color.isDark()
+//        animationView.isActivated = isDarkBg
+//        toolbar.isActivated = isDarkBg
     }
 
     private fun Int.isDark(): Boolean {
@@ -275,19 +265,16 @@ class PlayerFragment : BaseMvRxFragment() {
             android.R.id.home -> requireActivity().finish()
             R.id.info -> Unit
             R.id.visibility -> {
-                viewModel.setDistractionFree(item.isChecked)
-                val menuIcon = if (item.isChecked) R.drawable.ic_eye_teal else R.drawable.ic_eye_selector
-                item.icon = ContextCompat.getDrawable(requireContext(), menuIcon)
-            }
-            R.id.setWallpaper -> {
-                startActivity(Intent(
-                        WallpaperManager.ACTION_CHANGE_LIVE_WALLPAPER
-                ).apply {
-                    putExtra(
-                            WallpaperManager.EXTRA_LIVE_WALLPAPER_COMPONENT,
-                            ComponentName(requireContext(), MinWallpaperService::class.java)
-                    )
-                })
+                val builder = AlertDialog.Builder(requireContext())
+                builder.setMessage(R.string.confirm_set_wallpaper)
+                        .setPositiveButton(R.string.yes) { _, _ ->
+                            viewModel.applyWallpaper()
+                        }
+                        .setNegativeButton(R.string.cancel) { _, _ ->
+                            // User cancelled the dialog
+                        }
+                // Create the AlertDialog object and return it
+                builder.create().show()
             }
         }
         return true

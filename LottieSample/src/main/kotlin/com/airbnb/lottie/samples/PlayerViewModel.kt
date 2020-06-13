@@ -2,7 +2,12 @@ package com.airbnb.lottie.samples
 
 import android.animation.ValueAnimator
 import android.app.Application
+import android.app.WallpaperManager
+import android.content.ComponentName
+import android.content.Intent
+import android.graphics.Color
 import android.net.Uri
+import androidx.preference.PreferenceManager
 import com.airbnb.lottie.LottieComposition
 import com.airbnb.lottie.LottieCompositionFactory
 import com.airbnb.lottie.LottieTask
@@ -19,6 +24,8 @@ data class PlayerState(
         val scaleVisible: Boolean = false,
         val speedVisible: Boolean = false,
         val modeVisible: Boolean = false,
+        val background: Int = Color.BLACK,
+        val scale: Float = 1f,
         val speed: Float = 1f,
         val repeatCount: Int = ValueAnimator.INFINITE,
         val animationMode: String = "Infinite"
@@ -74,6 +81,10 @@ class PlayerViewModel(
 
     fun toggleScaleVisible() = setState { copy(scaleVisible = !scaleVisible) }
 
+    fun setScale(scale: Float) = setState { copy(scale = scale) }
+
+    fun setBackground(color: Int) = setState { copy(background = color) }
+
     fun setScaleVisible(visible: Boolean) = setState { copy(scaleVisible = visible) }
 
     fun toggleSpeedVisible() = setState { copy(speedVisible = !speedVisible) }
@@ -91,6 +102,33 @@ class PlayerViewModel(
                 scaleVisible = false,
                 speedVisible = false
         )
+    }
+
+    fun applyWallpaper() {
+        withState {
+            PreferenceManager.getDefaultSharedPreferences(application).edit()
+                    .putString(PrefKeys.LOTTIE_URL, it.lottieURL)
+                    .putString(PrefKeys.ANIMATION_MODE, it.animationMode)
+                    .putInt(PrefKeys.BACKGROUND, it.background)
+                    .putFloat(PrefKeys.SCALE, it.scale)
+                    .putFloat(PrefKeys.SPEED, it.speed)
+                    .apply()
+        }
+        val wallpaperInfo = WallpaperManager.getInstance(application).wallpaperInfo
+
+        val componentName = ComponentName(application, MinWallpaperService::class.java)
+        if(wallpaperInfo != null && componentName.className==wallpaperInfo.serviceName){
+            return
+        }
+        application.startActivity(Intent(
+                WallpaperManager.ACTION_CHANGE_LIVE_WALLPAPER
+        ).apply {
+            addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+            putExtra(
+                    WallpaperManager.EXTRA_LIVE_WALLPAPER_COMPONENT,
+                    componentName
+            )
+        })
     }
 
     companion object : MvRxViewModelFactory<PlayerViewModel, PlayerState> {

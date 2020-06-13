@@ -2,8 +2,13 @@
 
 package com.airbnb.lottie.samples
 
-const val PREF_LOTTIE_URL = "lottie_url"
 
-enum class AnimationMode {
-    INFINITE, ON_TOUCH, ON_UNLOCK
+interface PrefKeys {
+    companion object {
+        const val LOTTIE_URL = "LOTTIE_URL"
+        const val ANIMATION_MODE = "ANIMATION_MODE"
+        const val SCALE = "SCALE"
+        const val SPEED = "SPEED"
+        const val BACKGROUND = "BACKGROUND"
+    }
 }

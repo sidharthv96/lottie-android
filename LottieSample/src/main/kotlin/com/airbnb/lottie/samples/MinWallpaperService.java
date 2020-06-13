@@ -38,21 +38,47 @@ public class MinWallpaperService extends WallpaperService {
         private final Handler handler = new Handler(Objects.requireNonNull(Looper.myLooper()));
         private final LottieDrawable lottieDrawable = new LottieDrawable();
         private final Runnable drawRunner = this::draw;
-        private AnimationMode animationMode = AnimationMode.INFINITE;
+        private String animationMode = getString(R.string.infinite);
         private int tx;
         private int ty;
         private int width;
         private int height;
         private boolean visible = true;
+        private int background;
+        private float scale = 1;
+        private float speed = 1;
 
 
         public MyWallpaperEngine() {
-            loadLottieFromURL(prefs.getString(Constants.PREF_LOTTIE_URL, "https://assets8.lottiefiles.com/datafiles/QeC7XD39x4C1CIj/data.json"));
+            updateLottie();
+            updateBackground();
+            updateScale();
+            updateAnimationMode();
+            updateSpeed();
             lottieDrawable.addAnimatorUpdateListener(this);
+        }
+
+        private void updateLottie(){
+            loadLottieFromURL(prefs.getString(PrefKeys.LOTTIE_URL, "https://assets8.lottiefiles.com/datafiles/QeC7XD39x4C1CIj/data.json"));
+        }
+
+        private void updateBackground(){
+            background = prefs.getInt(PrefKeys.BACKGROUND, Color.BLACK);
+        }
+
+        private void updateSpeed(){
+            speed = prefs.getFloat(PrefKeys.SPEED, 1f);
+            lottieDrawable.setSpeed(speed);
         }
 
         private void loadLottieFromURL(String url) {
             LottieCompositionFactory.fromUrl(MinWallpaperService.this, url).addListener(this::loadComposition);
+        }
+
+
+        private void updateScale() {
+            scale = prefs.getFloat(PrefKeys.SCALE, Color.BLACK);
+            lottieDrawable.setScale(scale);
         }
 
         private void loadComposition(LottieComposition result) {
@@ -64,7 +90,8 @@ public class MinWallpaperService extends WallpaperService {
         }
 
         private void updateAnimationMode(){
-            if(AnimationMode.INFINITE.equals(animationMode)){
+            animationMode = prefs.getString(PrefKeys.ANIMATION_MODE, getString(R.string.infinite));
+            if(getString(R.string.infinite).equals(animationMode)){
                 lottieDrawable.setRepeatCount(LottieDrawable.INFINITE);
                 lottieDrawable.playAnimation();
             } else {
@@ -75,12 +102,11 @@ public class MinWallpaperService extends WallpaperService {
         private void rescaleAnimation() {
             LottieComposition composition = lottieDrawable.getComposition();
             if(composition != null) {
-                float imageWidth = composition.getBounds().width();
-                float imageHeight = composition.getBounds().height();
-                float scale = 1;
-                if (imageWidth > 0) {
-                    scale = Math.min(height / imageHeight, width / imageWidth);
-                }
+                // float imageWidth = composition.getBounds().width();
+                // float imageHeight = composition.getBounds().height();
+                // if (imageWidth > 0) {
+                //     scale = Math.min(height / imageHeight, width / imageWidth);
+                // }
                 lottieDrawable.setScale(scale);
                 tx = (width - lottieDrawable.getIntrinsicWidth()) / 2;
                 ty = (height - lottieDrawable.getIntrinsicHeight()) / 2;
@@ -92,7 +118,7 @@ public class MinWallpaperService extends WallpaperService {
             this.visible = visible;
             if (visible) {
                 lottieDrawable.start();
-                if(AnimationMode.ON_UNLOCK.equals(animationMode)){
+                if(getString(R.string.on_load).equals(animationMode)){
                     lottieDrawable.playAnimation();
                 }
             } else {
@@ -119,7 +145,7 @@ public class MinWallpaperService extends WallpaperService {
 
         @Override
         public void onTouchEvent(MotionEvent event) {
-            if (AnimationMode.ON_TOUCH.equals(animationMode)) {
+            if (getString(R.string.on_touch).equals(animationMode)) {
                 if (!lottieDrawable.isAnimating()) {
                     lottieDrawable.playAnimation();
                 }
@@ -132,7 +158,7 @@ public class MinWallpaperService extends WallpaperService {
             try {
                 canvas = holder.lockCanvas();
                 if (canvas != null) {
-                    canvas.drawColor(Color.BLACK);
+                    canvas.drawColor(background);
                     canvas.translate(tx, ty);
                     lottieDrawable.draw(canvas);
                 }
@@ -146,13 +172,27 @@ public class MinWallpaperService extends WallpaperService {
 
         @Override
         public void onSharedPreferenceChanged(SharedPreferences sharedPreferences, String key) {
-            if ("lottie_url".equals(key)) {
-                loadLottieFromURL(sharedPreferences.getString(key, null));
-            } else if ("animation_mode".equals(key)) {
-                animationMode = AnimationMode.valueOf(sharedPreferences.getString(key, null));
-                updateAnimationMode();
+            prefs = sharedPreferences;
+            switch (key){
+                case PrefKeys.LOTTIE_URL:
+                    updateLottie();
+                    break;
+                case PrefKeys.ANIMATION_MODE:
+                    updateAnimationMode();
+                    break;
+                case PrefKeys.BACKGROUND:
+                    updateBackground();
+                    break;
+                case PrefKeys.SCALE:
+                    updateScale();
+                    break;
+                case PrefKeys.SPEED:
+                    updateSpeed();
+                    break;
             }
+
         }
+
 
         @Override
         public void onAnimationUpdate(ValueAnimator valueAnimator) {
