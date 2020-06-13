@@ -1,10 +1,10 @@
 package com.airbnb.lottie.samples
 
 import android.content.Context
-import androidx.annotation.DrawableRes
 import android.util.AttributeSet
 import android.view.View
 import android.widget.LinearLayout
+import androidx.annotation.DrawableRes
 import com.airbnb.epoxy.CallbackProp
 import com.airbnb.epoxy.ModelProp
 import com.airbnb.epoxy.ModelView

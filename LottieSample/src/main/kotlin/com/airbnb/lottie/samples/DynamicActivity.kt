@@ -2,8 +2,8 @@ package com.airbnb.lottie.samples
 
 import android.graphics.PointF
 import android.os.Bundle
-import androidx.appcompat.app.AppCompatActivity
 import android.util.Log
+import androidx.appcompat.app.AppCompatActivity
 import com.airbnb.lottie.LottieProperty
 import com.airbnb.lottie.model.KeyPath
 import com.airbnb.lottie.utils.MiscUtils

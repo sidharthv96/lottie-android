@@ -82,8 +82,6 @@ class PlayerViewModel(
 
     fun setSpeed(speed: Float) = setState { copy(speed = speed) }
 
-    fun toggleLoop() = setState { copy(repeatCount = if (repeatCount == ValueAnimator.INFINITE) 0 else ValueAnimator.INFINITE) }
-
     fun setDistractionFree(distractionFree: Boolean) = setState {
         copy(
                 controlsVisible = !distractionFree,

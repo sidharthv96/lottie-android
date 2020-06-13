@@ -6,18 +6,14 @@ import android.app.AlertDialog
 import android.content.ActivityNotFoundException
 import android.content.Intent
 import android.content.pm.PackageManager
-import com.google.android.material.snackbar.Snackbar
-import android.widget.ArrayAdapter
 import android.widget.EditText
 import android.widget.Toast
-import androidx.core.app.ActivityCompat.requestPermissions
-import androidx.core.app.ActivityCompat.startActivityForResult
-import androidx.core.content.ContextCompat.startActivity
 import com.airbnb.epoxy.EpoxyController
-import com.airbnb.lottie.samples.R.id.coordinatorLayout
 import com.airbnb.lottie.samples.model.CompositionArgs
 import com.airbnb.lottie.samples.views.marquee
+import com.google.android.material.snackbar.Snackbar
 import kotlinx.android.synthetic.main.fragment_player.*
+
 
 private const val RC_FILE = 1000
 private const val RC_CAMERA_PERMISSION = 1001
@@ -78,23 +74,6 @@ class PreviewFragment : BaseEpoxyFragment() {
             }
         }
 
-        previewItemView {
-            id("assets")
-            title(R.string.preview_assets)
-            icon(R.drawable.ic_storage)
-            clickListener { _ ->
-                val adapter = ArrayAdapter<String>(requireContext(), android.R.layout.select_dialog_item)
-                requireContext().assets.list("")?.asSequence()
-                        ?.filter { it.endsWith(".json") || it.endsWith(".zip") }
-                        ?.forEach { adapter.add(it) }
-                AlertDialog.Builder(context)
-                        .setAdapter(adapter) { _, which ->
-                            val args = CompositionArgs(asset = adapter.getItem(which))
-                            startActivity(PlayerActivity.intent(requireContext(), args))
-                        }
-                        .show()
-            }
-        }
     }
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
