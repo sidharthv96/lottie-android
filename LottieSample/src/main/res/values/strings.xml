@@ -74,4 +74,5 @@
     <string name="yes">Yes</string>
     <string name="no">No</string>
     <string name="confirm_set_wallpaper">Set as new Wallpaper?</string>
+    <string name="apply">Apply</string>
 </resources>

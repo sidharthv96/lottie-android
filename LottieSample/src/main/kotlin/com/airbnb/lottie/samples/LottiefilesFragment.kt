@@ -2,12 +2,13 @@ package com.airbnb.lottie.samples
 
 import android.annotation.SuppressLint
 import android.os.Bundle
-import android.util.Log
 import android.view.View
+import androidx.lifecycle.LiveData
 import androidx.lifecycle.Observer
 import androidx.paging.DataSource
 import androidx.paging.LivePagedListBuilder
 import androidx.paging.PageKeyedDataSource
+import androidx.paging.PagedList
 import com.airbnb.epoxy.EpoxyModel
 import com.airbnb.epoxy.paging.PagedListEpoxyController
 import com.airbnb.lottie.samples.model.AnimationData
@@ -22,16 +23,16 @@ import kotlinx.android.synthetic.main.fragment_epoxy_recycler_view.*
 import kotlin.properties.Delegates
 
 data class LottiefilesState(
-        val mode: LottiefilesMode = LottiefilesMode.Recent,
+        val mode: LottiefilesMode = LottiefilesMode.Popular,
         val query: String = ""
 ) : MvRxState
 
 class LottiefilesViewModel(initialState: LottiefilesState, private val api: LottiefilesApi) : MvRxViewModel<LottiefilesState>(initialState) {
 
-    private var mode = initialState.mode
-    private var query = initialState.query
+    private var mode: LottiefilesMode = initialState.mode
+    private var query: String = initialState.query
 
-    val pagedList = LivePagedListBuilder<Int, AnimationData>(object : DataSource.Factory<Int, AnimationData>() {
+    val pagedList: LiveData<PagedList<AnimationData>> = LivePagedListBuilder(object : DataSource.Factory<Int, AnimationData>() {
         override fun create(): DataSource<Int, AnimationData> {
             return LottiefilesDataSource(api, mode, query)
         }
@@ -39,9 +40,9 @@ class LottiefilesViewModel(initialState: LottiefilesState, private val api: Lott
 
     init {
         selectSubscribe(LottiefilesState::mode, LottiefilesState::query) { mode, query ->
+            pagedList.value?.dataSource?.invalidate()
             this.mode = mode
             this.query = query
-            pagedList.value?.dataSource?.invalidate()
         }
     }
 
@@ -76,7 +77,7 @@ class LottiefilesDataSource(
                 .subscribeOn(Schedulers.io())
                 .subscribe(
                         { d -> callback.onResult(d.data, 0, d.total, null, 2.takeIf { d.data.isNotEmpty() }) },
-                        { err -> Log.e(LottiefilesFragment::class.simpleName, "loadInitial: ", err ) }
+                        { callback.onResult(emptyList(), null, null) }
                 )
     }
 
@@ -98,8 +99,7 @@ class LottiefilesDataSource(
                 .subscribeOn(Schedulers.io())
                 .subscribe(
                         { callback.onResult(it.data, page + 1) },
-                        { err -> Log.e(LottiefilesFragment::class.simpleName, "loadPage: ",
-                                err ) }
+                        { callback.onResult(emptyList(), null) }
                 )
     }
 }
@@ -158,8 +158,12 @@ class LottiefilesFragment : BaseMvRxFragment(R.layout.fragment_epoxy_recycler_vi
                         searchClickListener(viewModel::setQuery)
                     }
                 }
-                super.addModels(models)
+
+                super.addModels(models.filterIsInstance<AnimationItemViewModel_>().filter {
+                    it.previewUrl() != null
+                })
             }
+
         }
     }
 
