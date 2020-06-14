@@ -12,7 +12,7 @@ import com.airbnb.lottie.samples.inflate
 import com.airbnb.lottie.samples.setImageUrl
 import kotlinx.android.synthetic.main.item_view_showcase_animation.view.*
 
-@ModelView(autoLayout = ModelView.Size.MATCH_WIDTH_WRAP_HEIGHT)
+@ModelView(autoLayout = ModelView.Size.WRAP_WIDTH_WRAP_HEIGHT)
 class AnimationItemView @JvmOverloads constructor(
         context: Context,
         attrs: AttributeSet? = null,
