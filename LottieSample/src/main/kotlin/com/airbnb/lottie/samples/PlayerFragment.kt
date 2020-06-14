@@ -239,9 +239,9 @@ class PlayerFragment : BaseMvRxFragment() {
     }
 
     private fun invertColor(color: Int) {
-//        val isDarkBg = color.isDark()
-//        animationView.isActivated = isDarkBg
-//        toolbar.isActivated = isDarkBg
+        val isDarkBg = color.isDark()
+        animationView.isActivated = isDarkBg
+        toolbar.isActivated = isDarkBg
     }
 
     private fun Int.isDark(): Boolean {
@@ -270,7 +270,7 @@ class PlayerFragment : BaseMvRxFragment() {
                         .setPositiveButton(R.string.yes) { _, _ ->
                             viewModel.applyWallpaper()
                         }
-                        .setNegativeButton(R.string.cancel) { _, _ ->
+                        .setNegativeButton(R.string.no) { _, _ ->
                             // User cancelled the dialog
                         }
                 // Create the AlertDialog object and return it

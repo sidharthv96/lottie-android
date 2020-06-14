@@ -58,17 +58,6 @@
     <string name="one_x">1x</string>
     <string name="two_x">2x</string>
 
-    <string name="min_frame_dialog">Set min frame</string>
-    <string name="max_frame_dialog">Set max frame</string>
-    <string name="min_frame">Min frame: %1$d</string>
-    <string name="max_frame">Max frame: %1$d</string>
-
-    <string name="render_times_per_layer_button">View render times per layer</string>
-    <string name="lottie_version">Lottie %1$s</string>e
-    <string name="render_times_title">Render time per layer</string>
-    <string name="key_paths_title">KeyPaths in animation.\nUsed for dynamic properties.</string>
-    <string name="warnings_title">Warnings</string>
-
     <string name="lottiefiles">Lottiefiles</string>
     <string name="lottiefiles_airbnb">Lottiefiles is not affiliated with Airbnb</string>
     <string name="popular">Popular</string>
@@ -77,18 +66,12 @@
 
     <string name="anonymous">Anonymous</string>
 
-    <string name="showcase_item_app_intro">App\nTutorial</string>
-    <string name="showcase_item_bullseye">\nBullseye</string>
-    <string name="showcase_item_dynamic_properties">Dynamic\nProperties</string>
-    <string name="showcase_item_animated_text">Animated\nText</string>
-    <string name="showcase_item_dynamic_text">Dynamic\nText</string>
     <string name="showcase_item_recycler_viwe">RecyclerView</string>
-    <string name="bullseye_drag_dot">Drag the blue dot</string>
     <string name="control_bar_mode">Mode</string>
     <string name="infinite">Infinite</string>
     <string name="on_touch">On Touch</string>
     <string name="on_load">On Load</string>
     <string name="yes">Yes</string>
-    <string name="cancel">Cancel</string>
+    <string name="no">No</string>
     <string name="confirm_set_wallpaper">Set as new Wallpaper?</string>
 </resources>

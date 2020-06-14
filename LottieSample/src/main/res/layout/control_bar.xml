@@ -16,10 +16,10 @@
         android:paddingBottom="8dp"
         android:clipToPadding="false">
         <com.airbnb.lottie.samples.views.ControlBarItemToggleView
-            android:id="@+id/scaleToggle"
+            android:id="@+id/modeToggle"
             style="@style/ControlBarItem"
-            app:src="@drawable/ic_scale"
-            app:text="@string/control_bar_scale" />
+            app:src="@drawable/ic_loop"
+            app:text="@string/control_bar_mode" />
         <com.airbnb.lottie.samples.views.ControlBarItemToggleView
             android:id="@+id/backgroundColorToggle"
             style="@style/ControlBarItem"
@@ -31,9 +31,9 @@
             app:src="@drawable/ic_fast_forward"
             app:text="@string/control_bar_speed" />
         <com.airbnb.lottie.samples.views.ControlBarItemToggleView
-            android:id="@+id/modeToggle"
+            android:id="@+id/scaleToggle"
             style="@style/ControlBarItem"
-            app:src="@drawable/ic_loop"
-            app:text="@string/control_bar_mode" />
+            app:src="@drawable/ic_scale"
+            app:text="@string/control_bar_scale" />
     </LinearLayout>
 </HorizontalScrollView>

@@ -3,6 +3,7 @@
     package="com.airbnb.lottie.samples">
 
     <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
     <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
     <uses-permission android:name="android.permission.CAMERA" />
@@ -52,7 +53,6 @@
             android:screenOrientation="portrait" />
         <activity android:name=".FullScreenActivity" />
 
-        <activity android:name=".DynamicActivity" />
         <activity
             android:name=".PlayerActivity"
             android:screenOrientation="portrait">

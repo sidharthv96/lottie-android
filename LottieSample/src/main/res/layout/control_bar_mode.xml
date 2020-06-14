@@ -19,17 +19,20 @@
         android:paddingLeft="4dp">
 
         <com.airbnb.lottie.samples.views.ControlBarItemToggleView
-            style="@style/SpeedItem"
+            style="@style/ControlBarItem"
+            android:layout_weight="1"
             app:src="@drawable/ic_loop"
             app:text="@string/infinite"/>
 
         <com.airbnb.lottie.samples.views.ControlBarItemToggleView
-            style="@style/SpeedItem"
+            style="@style/ControlBarItem"
+            android:layout_weight="1"
             app:src="@drawable/ic_invert"
             app:text="@string/on_touch"/>
 
         <com.airbnb.lottie.samples.views.ControlBarItemToggleView
-            style="@style/SpeedItem"
+            style="@style/ControlBarItem"
+            android:layout_weight="1"
             app:src="@drawable/ic_eye_black"
             app:text="@string/on_load"/>
 
