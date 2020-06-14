@@ -1,11 +1,16 @@
 package com.airbnb.lottie.samples
 
-import com.airbnb.epoxy.EpoxyController
+import android.os.Bundle
+import android.view.LayoutInflater
+import android.view.View
+import android.view.ViewGroup
+import androidx.fragment.app.Fragment
+import androidx.recyclerview.widget.GridLayoutManager
+import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.RecyclerView
+import com.airbnb.lottie.samples.grid.DummyContent
+import com.airbnb.lottie.samples.grid.MyLottieItemRecyclerViewAdapter
 import com.airbnb.lottie.samples.model.AnimationResponseV2
-import com.airbnb.lottie.samples.model.CompositionArgs
-import com.airbnb.lottie.samples.views.animationItemView
-import com.airbnb.lottie.samples.views.loadingView
-import com.airbnb.lottie.samples.views.marquee
 import com.airbnb.mvrx.*
 import io.reactivex.schedulers.Schedulers
 
@@ -27,32 +32,33 @@ class ShowcaseViewModel(initialState: ShowcaseState, api: LottiefilesApi) : MvRx
     }
 }
 
-class ShowcaseFragment : BaseEpoxyFragment() {
+class ShowcaseFragment : Fragment() {
 
-    private val viewModel: ShowcaseViewModel by fragmentViewModel()
+    private var columnCount = 3
 
-    override fun EpoxyController.buildModels() = withState(viewModel) { state ->
-        marquee {
-            id("showcase")
-            title("Showcase")
+
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+
+        arguments?.let {
+            columnCount = 3
         }
+    }
 
-        val collectionItems = state.response()?.data
+    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?,
+                              savedInstanceState: Bundle?): View? {
+        val view = inflater.inflate(R.layout.fragment_lottie_item_list, container, false)
 
-        if (collectionItems == null) {
-            loadingView {
-                id("loading")
-            }
-        } else {
-            collectionItems.forEach {
-                animationItemView {
-                    id(it.id)
-                    title(it.title)
-                    previewUrl("https://assets9.lottiefiles.com/${it.preview}")
-                    previewBackgroundColor(it.bgColorInt)
-                    onClickListener { _ -> startActivity(PlayerActivity.intent(requireContext(), CompositionArgs(animationDataV2 = it))) }
+        // Set the adapter
+        if (view is RecyclerView) {
+            with(view) {
+                layoutManager = when {
+                    columnCount <= 1 -> LinearLayoutManager(context)
+                    else -> GridLayoutManager(context, columnCount)
                 }
+                adapter = MyLottieItemRecyclerViewAdapter(DummyContent.ITEMS)
             }
         }
+        return view
     }
 }
