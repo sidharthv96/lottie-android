@@ -10,4 +10,5 @@
     <dimen name="showcase_carousel_padding">8dp</dimen>
     <!-- This is intentionally px -->
     <dimen name="film_strip_size" tools:ignore="PxUsage">200px</dimen>
+    <dimen name="text_margin">16dp</dimen>
 </resources>
