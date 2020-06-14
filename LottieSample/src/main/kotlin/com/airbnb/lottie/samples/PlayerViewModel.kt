@@ -2,7 +2,12 @@ package com.airbnb.lottie.samples
 
 import android.animation.ValueAnimator
 import android.app.Application
+import android.app.WallpaperManager
+import android.content.ComponentName
+import android.content.Intent
+import android.graphics.Color
 import android.net.Uri
+import androidx.preference.PreferenceManager
 import com.airbnb.lottie.LottieComposition
 import com.airbnb.lottie.LottieCompositionFactory
 import com.airbnb.lottie.LottieTask
@@ -11,21 +16,19 @@ import com.airbnb.mvrx.*
 import java.io.FileInputStream
 
 data class PlayerState(
+        val lottieURL: String = "",
         val composition: Async<LottieComposition> = Uninitialized,
         val controlsVisible: Boolean = true,
         val controlBarVisible: Boolean = true,
-        val renderGraphVisible: Boolean = false,
-        val borderVisible: Boolean = false,
         val backgroundColorVisible: Boolean = false,
         val scaleVisible: Boolean = false,
         val speedVisible: Boolean = false,
-        val trimVisible: Boolean = false,
-        val useHardwareAcceleration: Boolean = false,
-        val useMergePaths: Boolean = false,
-        val minFrame: Int = 0,
-        val maxFrame: Int = 0,
+        val modeVisible: Boolean = false,
+        val background: Int = Color.BLACK,
+        val scale: Float = 1f,
         val speed: Float = 1f,
-        val repeatCount: Int = ValueAnimator.INFINITE
+        val repeatCount: Int = ValueAnimator.INFINITE,
+        val animationMode: String = "Infinite"
 ) : MvRxState
 
 class PlayerViewModel(
@@ -35,16 +38,22 @@ class PlayerViewModel(
 
     fun fetchAnimation(args: CompositionArgs) {
         val url = args.url ?: args.animationDataV2?.file ?: args.animationData?.lottieLink
-
         when {
-            url != null -> LottieCompositionFactory.fromUrl(application, url, null)
+            url != null -> {
+                setState {
+                    copy(
+                            lottieURL = url
+                    )
+                }
+                LottieCompositionFactory.fromUrl(application, url, null)
+            }
             args.fileUri != null -> taskForUri(args.fileUri)
             args.asset != null -> LottieCompositionFactory.fromAsset(application, args.asset, null)
             else -> error("Don't know how to fetch animation for $args")
         }
                 .addListener {
                     setState {
-                        copy(composition = Success(it), minFrame = it.startFrame.toInt(), maxFrame = it.endFrame.toInt())
+                        copy(composition = Success(it))
                     }
                 }
                 .addFailureListener { setState { copy(composition = Fail(it)) } }
@@ -60,9 +69,11 @@ class PlayerViewModel(
         return LottieCompositionFactory.fromJsonInputStream(fis, null)
     }
 
-    fun toggleRenderGraphVisible() = setState { copy(renderGraphVisible = !renderGraphVisible) }
+    fun toggleModeVisible() = setState { copy(modeVisible = !modeVisible) }
 
-    fun toggleBorderVisible() = setState { copy(borderVisible = !borderVisible) }
+    fun setModeVisible(visible: Boolean) = setState { copy(modeVisible = visible) }
+
+    fun setMode(mode: String) = setState { copy(animationMode = mode) }
 
     fun toggleBackgroundColorVisible() = setState { copy(backgroundColorVisible = !backgroundColorVisible) }
 
@@ -70,43 +81,54 @@ class PlayerViewModel(
 
     fun toggleScaleVisible() = setState { copy(scaleVisible = !scaleVisible) }
 
+    fun setScale(scale: Float) = setState { copy(scale = scale) }
+
+    fun setBackground(color: Int) = setState { copy(background = color) }
+
     fun setScaleVisible(visible: Boolean) = setState { copy(scaleVisible = visible) }
 
     fun toggleSpeedVisible() = setState { copy(speedVisible = !speedVisible) }
 
     fun setSpeedVisible(visible: Boolean) = setState { copy(speedVisible = visible) }
 
-    fun toggleTrimVisible() = setState { copy(trimVisible = !trimVisible) }
-
-    fun setTrimVisible(visible: Boolean) = setState { copy(trimVisible = visible) }
-
-    fun toggleHardwareAcceleration() = setState { copy(useHardwareAcceleration = !useHardwareAcceleration) }
-
-    fun toggleMergePaths() = setState { copy(useMergePaths = !useMergePaths) }
-
-    fun setMinFrame(minFrame: Int) = setState {
-        copy(minFrame = Math.max(minFrame, composition()?.startFrame?.toInt() ?: 0))
-    }
-
-    fun setMaxFrame(maxFrame: Int) = setState {
-        copy(maxFrame = Math.min(maxFrame, composition()?.endFrame?.toInt() ?: 0))
-    }
-
     fun setSpeed(speed: Float) = setState { copy(speed = speed) }
-
-    fun toggleLoop() = setState { copy(repeatCount = if (repeatCount == ValueAnimator.INFINITE) 0 else ValueAnimator.INFINITE) }
 
     fun setDistractionFree(distractionFree: Boolean) = setState {
         copy(
                 controlsVisible = !distractionFree,
                 controlBarVisible = !distractionFree,
-                renderGraphVisible = false,
-                borderVisible = false,
+                modeVisible = false,
                 backgroundColorVisible = false,
                 scaleVisible = false,
-                speedVisible = false,
-                trimVisible = false
+                speedVisible = false
         )
+    }
+
+    fun applyWallpaper() {
+        withState {
+            PreferenceManager.getDefaultSharedPreferences(application).edit()
+                    .putString(PrefKeys.LOTTIE_URL, it.lottieURL)
+                    .putString(PrefKeys.ANIMATION_MODE, it.animationMode)
+                    .putInt(PrefKeys.BACKGROUND, it.background)
+                    .putFloat(PrefKeys.SCALE, it.scale)
+                    .putFloat(PrefKeys.SPEED, it.speed)
+                    .apply()
+        }
+        val wallpaperInfo = WallpaperManager.getInstance(application).wallpaperInfo
+
+        val componentName = ComponentName(application, MinWallpaperService::class.java)
+        if(wallpaperInfo != null && componentName.className==wallpaperInfo.serviceName){
+            return
+        }
+        application.startActivity(Intent(
+                WallpaperManager.ACTION_CHANGE_LIVE_WALLPAPER
+        ).apply {
+            addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+            putExtra(
+                    WallpaperManager.EXTRA_LIVE_WALLPAPER_COMPONENT,
+                    componentName
+            )
+        })
     }
 
     companion object : MvRxViewModelFactory<PlayerViewModel, PlayerState> {

@@ -6,10 +6,10 @@ import android.graphics.Canvas
 import android.graphics.Color
 import android.graphics.Paint
 import android.graphics.drawable.ColorDrawable
-import androidx.annotation.ColorInt
-import androidx.core.content.ContextCompat
 import android.util.AttributeSet
 import android.view.View
+import androidx.annotation.ColorInt
+import androidx.core.content.ContextCompat
 import com.airbnb.lottie.samples.R
 
 class BackgroundColorView @JvmOverloads constructor(

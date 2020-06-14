@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <attr name="titleText" format="string" />
+    <attr name="subtitleText" format="string" />
     <declare-styleable name="ControlBarItemToggleView">
         <attr name="src" format="reference" />
         <attr name="text" format="string" />

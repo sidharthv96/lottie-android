@@ -13,8 +13,8 @@ class PlayerActivity : AppCompatActivity() {
         setContentView(R.layout.activity_player)
 
         if (savedInstanceState == null) {
-            val args = intent.getParcelableExtra(PlayerFragment.EXTRA_ANIMATION_ARGS) ?:
-                    CompositionArgs(fileUri = intent.data)
+            val args = intent.getParcelableExtra(PlayerFragment.EXTRA_ANIMATION_ARGS)
+                    ?: CompositionArgs(fileUri = intent.data)
             supportFragmentManager.beginTransaction()
                     .add(R.id.content, PlayerFragment.forAsset(args))
                     .commit()

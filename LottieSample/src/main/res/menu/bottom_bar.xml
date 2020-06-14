@@ -19,9 +19,4 @@
         android:title="@string/bottom_bar_lottiefiles"
         app:showAsAction="always|withText"/>
 
-    <item
-        android:id="@+id/learn"
-        android:icon="@drawable/ic_learn"
-        android:title="@string/bottom_bar_learn"
-        app:showAsAction="always|withText"/>
 </menu>

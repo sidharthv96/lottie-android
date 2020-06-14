@@ -5,7 +5,6 @@ import android.util.AttributeSet
 import android.view.View
 import android.widget.FrameLayout
 import com.airbnb.epoxy.CallbackProp
-import com.airbnb.epoxy.ModelProp
 import com.airbnb.epoxy.ModelView
 import com.airbnb.lottie.samples.R
 import kotlinx.android.synthetic.main.listing_card.view.*

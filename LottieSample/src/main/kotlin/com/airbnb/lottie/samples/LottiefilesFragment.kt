@@ -1,11 +1,14 @@
 package com.airbnb.lottie.samples
 
+import android.annotation.SuppressLint
 import android.os.Bundle
 import android.view.View
+import androidx.lifecycle.LiveData
 import androidx.lifecycle.Observer
 import androidx.paging.DataSource
 import androidx.paging.LivePagedListBuilder
 import androidx.paging.PageKeyedDataSource
+import androidx.paging.PagedList
 import com.airbnb.epoxy.EpoxyModel
 import com.airbnb.epoxy.paging.PagedListEpoxyController
 import com.airbnb.lottie.samples.model.AnimationData
@@ -14,27 +17,22 @@ import com.airbnb.lottie.samples.views.AnimationItemViewModel_
 import com.airbnb.lottie.samples.views.lottiefilesTabBar
 import com.airbnb.lottie.samples.views.marquee
 import com.airbnb.lottie.samples.views.searchInputItemView
-import com.airbnb.mvrx.BaseMvRxFragment
-import com.airbnb.mvrx.MvRxState
-import com.airbnb.mvrx.MvRxViewModelFactory
-import com.airbnb.mvrx.ViewModelContext
-import com.airbnb.mvrx.fragmentViewModel
-import com.airbnb.mvrx.withState
+import com.airbnb.mvrx.*
 import io.reactivex.schedulers.Schedulers
 import kotlinx.android.synthetic.main.fragment_epoxy_recycler_view.*
 import kotlin.properties.Delegates
 
 data class LottiefilesState(
-        val mode: LottiefilesMode = LottiefilesMode.Recent,
+        val mode: LottiefilesMode = LottiefilesMode.Popular,
         val query: String = ""
 ) : MvRxState
 
 class LottiefilesViewModel(initialState: LottiefilesState, private val api: LottiefilesApi) : MvRxViewModel<LottiefilesState>(initialState) {
 
-    private var mode = initialState.mode
-    private var query = initialState.query
+    private var mode: LottiefilesMode = initialState.mode
+    private var query: String = initialState.query
 
-    val pagedList = LivePagedListBuilder<Int, AnimationData>(object : DataSource.Factory<Int, AnimationData>() {
+    val pagedList: LiveData<PagedList<AnimationData>> = LivePagedListBuilder(object : DataSource.Factory<Int, AnimationData>() {
         override fun create(): DataSource<Int, AnimationData> {
             return LottiefilesDataSource(api, mode, query)
         }
@@ -42,9 +40,9 @@ class LottiefilesViewModel(initialState: LottiefilesState, private val api: Lott
 
     init {
         selectSubscribe(LottiefilesState::mode, LottiefilesState::query) { mode, query ->
+            pagedList.value?.dataSource?.invalidate()
             this.mode = mode
             this.query = query
-            pagedList.value?.dataSource?.invalidate()
         }
     }
 
@@ -65,6 +63,7 @@ class LottiefilesDataSource(
         val mode: LottiefilesMode,
         val query: String
 ) : PageKeyedDataSource<Int, AnimationData>() {
+    @SuppressLint("CheckResult")
     override fun loadInitial(params: LoadInitialParams<Int>, callback: LoadInitialCallback<Int, AnimationData>) {
         if (mode == LottiefilesMode.Search && query.isEmpty()) {
             callback.onResult(emptyList(), null, null)
@@ -78,7 +77,7 @@ class LottiefilesDataSource(
                 .subscribeOn(Schedulers.io())
                 .subscribe(
                         { d -> callback.onResult(d.data, 0, d.total, null, 2.takeIf { d.data.isNotEmpty() }) },
-                        { callback.onError(it) }
+                        { callback.onResult(emptyList(), null, null) }
                 )
     }
 
@@ -90,6 +89,7 @@ class LottiefilesDataSource(
         loadPage(params.key, callback)
     }
 
+    @SuppressLint("CheckResult")
     private fun loadPage(page: Int, callback: LoadCallback<Int, AnimationData>) {
         when (mode) {
             LottiefilesMode.Popular -> api.getPopular(page)
@@ -99,7 +99,7 @@ class LottiefilesDataSource(
                 .subscribeOn(Schedulers.io())
                 .subscribe(
                         { callback.onResult(it.data, page + 1) },
-                        { callback.onError(it) }
+                        { callback.onResult(emptyList(), null) }
                 )
     }
 }
@@ -133,7 +133,6 @@ class LottiefilesFragment : BaseMvRxFragment(R.layout.fragment_epoxy_recycler_vi
                 marquee {
                     id("lottiefiles")
                     title(R.string.lottiefiles)
-                    subtitle(R.string.lottiefiles_airbnb)
                 }
 
                 lottiefilesTabBar {
@@ -159,8 +158,12 @@ class LottiefilesFragment : BaseMvRxFragment(R.layout.fragment_epoxy_recycler_vi
                         searchClickListener(viewModel::setQuery)
                     }
                 }
-                super.addModels(models)
+
+                super.addModels(models.filterIsInstance<AnimationItemViewModel_>().filter {
+                    it.previewUrl() != null
+                })
             }
+
         }
     }
 
